@@ -1,3 +1,6 @@
+const ALPHABET: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWER_ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz";
+
 pub struct Config {
     pub text: String,
     pub rot: String,
@@ -7,7 +10,7 @@ pub struct Config {
 impl Config {
     pub fn new(args: &[String]) -> Result<Config, &str> {
         if args.len() < 4 {
-            return Err("Not enough arguments");
+            return Err("Not enough arguments, use -h or --help");
         }
 
         let text = args[1].clone();
@@ -18,47 +21,38 @@ impl Config {
     }
 
     pub fn cipher(text: &String, rot: &String) {
-        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
-        let lower_alphabet = alphabet.to_lowercase();
-
-        let unaltered_key: Vec<char> = alphabet.chars().collect();
-        let unaltered_lower_key: Vec<char> = lower_alphabet.chars().collect();
-
-        let mut key: Vec<char> = alphabet.chars().collect();
-        let mut lower_key: Vec<char> = lower_alphabet.chars().collect();
+        let mut key: Vec<char> = ALPHABET.chars().collect();
+        let mut lower_key: Vec<char> = LOWER_ALPHABET.chars().collect();
 
         let plain_text: Vec<char> = text.chars().collect();
 
-        let mut encoded_chars: Vec<char> = vec![];
+        let mut ciphered_chars: Vec<char> = vec![];
 
         key.rotate_left(rot.parse::<usize>().unwrap());
         lower_key.rotate_left(rot.parse::<usize>().unwrap());
 
         for character in plain_text {
             if character.is_uppercase() {
-                let position = index(character, unaltered_key.clone());
-                encoded_chars.push(key[position.clone().unwrap()]);
+                let position = index(character, &ALPHABET);
+                ciphered_chars.push(key[position.clone().unwrap()]);
             } else if character.is_lowercase() {
-                let position = index(character, unaltered_lower_key.clone());
-                encoded_chars.push(lower_key[position.clone().unwrap()]);
+                let position = index(character, &LOWER_ALPHABET);
+                ciphered_chars.push(lower_key[position.clone().unwrap()]);
             } else {
-                encoded_chars.push(character);
+                ciphered_chars.push(character);
             }
         }
 
-        let encoded_text = encoded_chars.iter().collect::<String>();
+        let encoded_text = ciphered_chars.iter().collect::<String>();
         println!("{}", encoded_text);
     }
 
     pub fn decipher(text: &String, rot: &String) {
-        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
-        let lower_alphabet = alphabet.to_lowercase();
+        let unaltered_key: Vec<char> = ALPHABET.chars().collect();
+        let unaltered_lower_key: Vec<char> = LOWER_ALPHABET.chars().collect();
 
-        let unaltered_key: Vec<char> = alphabet.chars().collect();
-        let unaltered_lower_key: Vec<char> = lower_alphabet.chars().collect();
-
-        let mut key: Vec<char> = alphabet.chars().collect();
-        let mut lower_key: Vec<char> = lower_alphabet.chars().collect();
+        let mut key: Vec<char> = ALPHABET.chars().collect();
+        let mut lower_key: Vec<char> = LOWER_ALPHABET.chars().collect();
 
         let encoded_text: Vec<char> = text.chars().collect();
 
@@ -67,12 +61,14 @@ impl Config {
         key.rotate_left(rot.parse::<usize>().unwrap());
         lower_key.rotate_left(rot.parse::<usize>().unwrap());
 
+        let key: String = key.iter().collect();
+        let lower_key: String = lower_key.iter().collect();
         for character in encoded_text {
             if character.is_uppercase() {
-                let position = index(character, key.clone());
+                let position = index(character, &key);
                 decoded_chars.push(unaltered_key[position.clone().unwrap()]);
             } else if character.is_lowercase() {
-                let position = index(character, lower_key.clone());
+                let position = index(character, &lower_key);
                 decoded_chars.push(unaltered_lower_key[position.clone().unwrap()]);
             } else {
                 decoded_chars.push(character);
@@ -84,9 +80,11 @@ impl Config {
     }
 }
 
-pub fn index(char: char, key: Vec<char>) -> Result<usize, String> {
-    for i in 0..=key.len() {
-        if key[i] == char {
+pub fn index(char: char, key: &str) -> Result<usize, String> {
+    let vec: Vec<char> = key.chars().collect();
+
+    for i in 0..=vec.len() {
+        if vec[i] == char {
             return Ok(i);
         }
     }
