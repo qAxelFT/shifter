@@ -3,6 +3,7 @@ pub struct Config {
     pub rot: String,
     pub cipher: String,
 }
+
 impl Config {
     pub fn new(args: &[String]) -> Result<Config, &str> {
         if args.len() < 4 {
@@ -97,8 +98,9 @@ Shifter is a CLI tool for ciphering and deciphering rotation ciphers
 Example: shifter ABC 13 -c
 
 Available OPTIONS:
-        -c, --cipher: cipher text using the rotation given
-        -d, --decipher: decipher text using the rotation given
+        -c, --cipher: cipher text using the rotation given.
+        -d, --decipher: decipher text using the rotation given.
+        -h, --help: help menu.
 ";
 
 pub fn help() {

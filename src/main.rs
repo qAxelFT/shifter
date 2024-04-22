@@ -13,6 +13,10 @@ fn main() {
     match &command[..] {
         "-d" | "--decipher" => Config::decipher(&config.text, &config.rot),
         "-c" | "--cipher" => Config::cipher(&config.text, &config.rot),
-        _ => shifter::help(),
+        "-h" | "--help" => shifter::help(),
+        _ => {
+            eprintln!("Not an option");
+            shifter::help();
+        }
     }
 }
